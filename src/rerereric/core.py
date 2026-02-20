@@ -384,14 +384,17 @@ class Rerereric:
 
     def _apply_resolution(self, file_path, conflict_info, resolution):
         """Apply a resolution to a specific conflict in a file."""
-        with open(file_path, 'r') as f:
-            content = f.read().split('\n')
+        with open(file_path, 'r', newline='') as f:
+            raw = f.read()
+
+        line_ending = '\r\n' if '\r\n' in raw else '\n'
+        content = raw.split(line_ending)
 
         # replace the conflict with the resolution
         content[conflict_info['start_line']:conflict_info['end_line'] + 1] = resolution.split('\n')
- 
-        with open(file_path, 'w') as f:
-            f.write('\n'.join(content))
+
+        with open(file_path, 'w', newline='') as f:
+            f.write(line_ending.join(content))
 
     def reapply_resolutions(self, file_paths, similarity_threshold=0.8, context_lines=2):
         """Try to resolve conflicts in a file using stored resolutions."""
